@@ -41,6 +41,8 @@ func gererClient(conn net.Conn, db *sql.DB) {
 
 		message := strings.TrimSpace(string(messageBuf[:nMessage]))
 
+		
+
 		ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 		defer cancel()
 

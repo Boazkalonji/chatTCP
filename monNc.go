@@ -26,6 +26,8 @@ func main() {
 		n, _ = os.Stdin.Read(texte)
 
 		conn.Write([]byte(string(texte[:n])))
+		
+
 
 		response := make([]byte, 2048)
 
