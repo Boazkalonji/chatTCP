@@ -7,6 +7,7 @@ import (
 	"net"
 	"strings"
 	"time"
+	"os"
 )
 
 func gererClient(conn net.Conn, db *sql.DB) {
@@ -23,6 +24,22 @@ func gererClient(conn net.Conn, db *sql.DB) {
 		return
 	}
 	pseudo := strings.TrimSpace(string(pseudoBuf[:nPseudo]))
+
+
+	go func(c net.Conn){
+
+
+		HubPrincipal.cadenas.Lock()
+		
+		
+
+		HubPrincipal.clients[c] = &pseudo
+		HubPrincipal.cadenas.Unlock()
+
+
+
+	}(conn)
+
 
 	for {
 
@@ -58,7 +75,34 @@ func gererClient(conn net.Conn, db *sql.DB) {
 				canalResultat <- false
 				return
 			}
+
+			HubPrincipal.braoadcast <- fmt.Sprintf("Voici le messesage du client ",pseudo,message)
+
 			canalResultat <- true
+
+		}()
+
+		go func(){
+
+
+			for {
+
+				msg := make([]byte,2048)
+
+				_,err := conn.Read(msg)
+
+				if err != nil{
+					fmt.Print("UNE EREUR SE PRODUIT %v", err)
+				}
+
+				os.Stdout.Write([]byte(msg))
+
+
+			}
+
+
+
+
 
 		}()
 

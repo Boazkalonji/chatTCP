@@ -7,6 +7,24 @@ import (
 	"time"
 )
 
+
+
+
+
+
+
+
+var HubPrincipal = GlobalHub{
+
+	clients :  make(map[net.Conn]*string),
+	braoadcast : make(chan string, 100),
+
+
+}
+
+
+
+
 func main() {
 
 	db := InitDB()
@@ -20,6 +38,9 @@ func main() {
 	}
 
 	defer listener.Close()
+
+	go HubPrincipal.DiffusionMessage()
+
 	fmt.Println("🟢 SERVEUR DE CHAT EN LIGNE SUR LE PORT 8080...")
 
 	for {
@@ -33,8 +54,13 @@ func main() {
 
 		conn.SetWriteDeadline(time.Now().Add(300 * time.Second))
 
+		
+
+
 		go gererClient(conn, db)
 
+
+		
 	}
 
 }
