@@ -1,36 +1,35 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net"
 	"os"
-	"time"
 )
 
-
-
-
-
-
-
-
 var HubPrincipal = GlobalHub{
-
-	clients :  make(map[net.Conn]*string),
-	braoadcast : make(chan string, 100),
-
-
+	clients:    make(map[net.Conn]*string),
+	braoadcast: make(chan string, 100),
 }
-
-
-
 
 func main() {
 
 	db := InitDB()
 	defer db.Close()
 
-	listener, err := net.Listen("tcp", "127.0.0.1:8080")
+	certificat, err := tls.LoadX509KeyPair("cert.pem", "key.pem")
+
+	if err != nil {
+		fmt.Printf("une erreur est survenu au moment du telechargement de clé  %v", err)
+	}
+
+	MaConfig := &tls.Config{
+
+		Certificates: []tls.Certificate{certificat},
+		MinVersion:   tls.VersionTLS12,
+	}
+
+	listener, err := tls.Listen("tcp", "127.0.0.1:8080", MaConfig)
 
 	if err != nil {
 		fmt.Printf("une erreur est survenu au moment de l'ecoute %v", err)
@@ -52,15 +51,8 @@ func main() {
 
 		fmt.Printf("📥 Nouveau client connecté : %s\n", conn.RemoteAddr().String())
 
-		conn.SetWriteDeadline(time.Now().Add(300 * time.Second))
-
-		
-
-
 		go gererClient(conn, db)
 
-
-		
 	}
 
 }

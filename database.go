@@ -29,12 +29,26 @@ func InitDB() *sql.DB {
 	);
 	`
 
+	queryUser := `
+	CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user TEXT NOT NULL,
+		mdp TEXT NOT NULL,
+		date TEXT NOT NULL
+	);
+	`
+
+	_, err = db.Exec(queryUser)
 	_, err = db.Exec(query)
 	if err != nil {
 		log.Fatalf("Erreur lors de la création de la table messages : %v", err)
 	}
 
-	fmt.Println("📦 [BASE DE DONNÉES] SQLite initialisé avec succès et table 'messages' prête.")
+	if err != nil {
+		log.Fatalf("Erreur lors de la création de la table users : %v", err)
+	}
+
+	fmt.Println("📦 [BASE DE DONNÉES] SQLite initialisé avec succès et table 'messages' et 'users' sont prêtes.")
 
 	return db
 }
