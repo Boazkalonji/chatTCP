@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 type Login struct {
@@ -20,13 +21,6 @@ type Session struct {
 	Expiration time.Time `json:"expiration"`
 	Token      string    `json:"token"`
 }
-
-
-var TokenGenere Session
-recuToken := json.NewDecoder(conn)
-recuToken.Decode(&TokenGenere)
-const TokenFinalPropre := TokenGenere.Token
-
 
 func main() {
 
@@ -84,22 +78,24 @@ func main() {
 			MotDePasse: mdpFinal,
 		})
 
-
-	
-	case "3" //AUTH_TOKEN
+	case "3": //AUTH_TOKEN
 
 		fmt.Printf("VEUILLEZ SAISIR VOTRE NOM(OU PSEUDO) \n")
-		nom, _ := LecteurClavier.ReadString('\n')
+		user, _ := LecteurClavier.ReadString('\n')
 		userFinal := strings.TrimSpace(user)
 
 		Jsonlogin := json.NewEncoder(conn)
+
+		//var TokenGenere Session
+		//recuToken := json.NewDecoder(conn)
+		//recuToken.Decode(&TokenGenere)
+		//TokenFinalPropre := TokenGenere.Token
+
 		Jsonlogin.Encode(Session{
-			User:     user,
-			Token: TokenFinalPropre,
-			}
-		)
-
-
+			User: userFinal,
+			//Token: TokenFinalPropre,
+		})
+	}
 
 	for {
 		fmt.Printf("VEUILLEZ SAISIR VOTRE MESSAGE SVP !!! \n")

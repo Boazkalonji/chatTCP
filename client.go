@@ -96,12 +96,14 @@ func gererClient(conn net.Conn, db *sql.DB) {
 		TokenEnvoyer := json.NewDecoder(conn)
 		err = TokenEnvoyer.Decode(&session)
 
-		resultat := VerfiierToken(session.Token, conn)
+		resultat := VerfiierToken(session.Token, session.User)
 
 		if resultat == true {
 
 			conn.Write([]byte("CONNEXION PAR TOKEN RECU"))
 
+		} else {
+			conn.Write([]byte("TOKEN OU UTILISATEUR INVALIDE\n"))
 		}
 
 	}

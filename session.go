@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+type Session struct {
+	User       string    `json:"user"`
+	Expiration time.Time `json:"expiration"`
+	Token      string    `json:"token"`
+}
+
 var SessionActives = make(map[string]Session)
 var MuSession sync.Mutex
 
@@ -45,20 +51,17 @@ func CreeSsion(user string, conn net.Conn) (string, bool) {
 
 }
 
-func VerfiierToken(tokenRecu string, conn net.Conn) bool {
+func VerfiierToken(user string, tokenRecu string) bool {
 
 	MuSession.Lock()
+	defer MuSession.Unlock()
+
 	session, existe := SessionActives[tokenRecu]
-	MuSession.Unlock()
-
-	if existe != false || time.Now().After(session.Expiration) {
-
-		conn.Write([]byte("VOTRE SESSIONS A EXPIRER , CONNECTER VOUS "))
+	if !existe {
 		return false
-
 	}
 
-	comparaison := subtle.ConstantTimeCompare([]byte(tokenRecu), []byte(SessionActives[tokenRecu].Token)) == 1
+	comparaison := subtle.ConstantTimeCompare([]byte(session.Token), []byte(tokenRecu)) == 1
 	fmt.Printf("", comparaison)
 	return true
 
